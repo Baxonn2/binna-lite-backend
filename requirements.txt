@@ -46,6 +46,9 @@ sqlalchemy2-stubs==0.0.2a35
 sqlmodel==0.0.21
 starlette==0.37.2
 tqdm==4.66.4
+types-passlib==1.7.7.20240819
+types-pyasn1==0.6.0.20240913
+types-python-jose==3.3.4.20240106
 typing_extensions==4.8.0
 tzdata==2024.1
 uvicorn==0.23.2

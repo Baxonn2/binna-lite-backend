@@ -1,6 +1,11 @@
 {
     "cSpell.words": [
+        "binna",
+        "Binna",
         "fastapi",
+        "ignacio",
+        "passlib",
         "sqlmodel"
-    ]
+    ],
+    "cSpell.language": "en,es-ES"
 }

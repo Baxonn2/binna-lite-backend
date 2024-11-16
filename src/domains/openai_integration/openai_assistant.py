@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Optional, get_origin, get_args, Union
 from openai.types.beta.assistant_tool_param import AssistantToolParam
 from openai.types.beta.function_tool_param import FunctionToolParam
 from openai.types.beta.assistant import Assistant
@@ -19,6 +19,10 @@ type_parser_map = {
     "bool": "boolean"
 }
 
+def check_is_optional(field):
+    return get_origin(field) is Union and \
+        type(None) in get_args(field)
+
 
 class FunctionParser:
     """
@@ -26,41 +30,103 @@ class FunctionParser:
     """
 
     def __init__(self, function):
-        annotations = function.__annotations__
         self.function_name = function.__name__
-        self.function_description = function.__doc__
-        self.function_return = annotations["return"]
+
+        annotations = function.__annotations__
+    
+        parsed_docstring = self.__parse_docstring(function)
+        self.function_description = parsed_docstring["description"]
         self.function_parameters = {
             "type": "object",
-            "properties": {}
+            "properties": {},
         }
+
+
+        self.strict_mode = True
+        required_properties = []
         for param_name, param_type in annotations.items():
             if param_name == "return":
                 continue
-            if not isinstance(param_type, type):
+            
+            # Si es un Optional, entonces no es requerido
+            is_optional = False
+            param_type_name = param_type.__name__
+            if check_is_optional(param_type):
+                is_optional = True
+                self.strict_mode = False
+                param_type_name = get_args(param_type)[0].__name__
+
+            elif not isinstance(param_type, type):
                 raise ValueError(
                     f"Invalid type for parameter {param_name} in function {self.function_name}"
                 )
             self.function_parameters['properties'][param_name] = {
-                "type": type_parser_map[param_type.__name__],
-                "description": "Nombre del sujeto a saludar" # TODO: parse description from docstring
+                "type": type_parser_map[param_type_name],
+                "description": parsed_docstring["args"].get(param_name, ""),
             }
 
-        # self.function_parameters = {
-        #     key: value for key, value in annotations.items() if key != "return"
-        # }
+            if not is_optional:
+                required_properties.append(param_name)
+
+        self.function_parameters["required"] = required_properties
+        if self.strict_mode:
+            self.function_parameters["additionalProperties"] = False          
     
     def __get_function_description(self):
+
         return {
             "name": self.function_name,
             "description": self.function_description,
-            "parameters": self.function_parameters
+            "parameters": self.function_parameters,
+            "strict": self.strict_mode,
+        }
+    
+    def __parse_docstring(self, function):
+        import re
+
+        docstring = function.__doc__
+        if not docstring:
+            raise ValueError(f"Function {function.__name__} has no docstring")
+        
+        # Docstring sections
+        description_match = re.search(r'^(.*?)(?:\n\nArgs:|\n\nReturns:|\n\n)', docstring, re.DOTALL)
+        description = description_match.group(1).strip() if description_match else None
+
+        # Extract Args
+        args_section_match = re.search(r"Args:\n((?:\s+- .*?\n)+)", docstring)
+        if not args_section_match:
+            return {}
+        args_section = args_section_match.group(1)
+
+        arg_pattern = r"^\s*-\s+(\w+):\s*(.*)$"
+        matches = re.findall(arg_pattern, args_section, re.MULTILINE)
+        args = {arg: description for arg, description in matches}
+        
+        # Extract Returns
+        returns_section = re.search(r'Returns:\n((?:\s+- .*?\n)+)', docstring)
+        returns = None
+        if returns_section:
+            return_type, return_description = returns_section.group(1).strip().split(": ", 1)
+            return_type = return_type.strip().split("- ", 1)[1]
+            returns = {
+                "type": return_type,
+                "description": return_description
+            }
+
+        return_to_description = f"Recibirás como respuesta {returns['description']}" if returns else None
+        if return_to_description:
+            description = f"{description}\n\n{return_to_description}"
+
+        return {
+            "description": description,
+            "args": args,
+            "returns": returns,
         }
     
     def as_tool_param(self) -> FunctionToolParam:
         return {
             "type": "function",
-            "function": self.__get_function_description()
+            "function": self.__get_function_description(),
         }
     
 def hello_user(name: str) -> str:
@@ -68,15 +134,31 @@ def hello_user(name: str) -> str:
     Responde con un saludo personalizado.
 
     Args:
-        name: Nombre del usuario a saludar.
+    - name: Nombre del usuario a saludar.
 
     Returns:
-        str: Retorna el mensaje de saludo personalizado
+    - str: un mensaje de saludo personalizado
     """
     return f"Hola! {name} <3"
 
+def add_customer(name: str, email: str, phone: str, age: Optional[int]) -> str:
+    """
+    Añade un nuevo cliente a la base de datos.
+
+    Args:
+    - name: Nombre del cliente.
+    - email: Correo del cliente.
+    - phone: Teléfono del cliente.
+    - age: Edad del cliente.
+
+    Returns:
+    - str: Mensaje de confirmación.
+    """
+    return f"Cliente {name} añadido correctamente."
+
 functions: List[AssistantToolParam] = [
-    FunctionParser(hello_user).as_tool_param()
+    FunctionParser(hello_user).as_tool_param(),
+    FunctionParser(add_customer).as_tool_param(),
 ]
 
 

@@ -1,0 +1,1 @@
+from src.domains.customer.models.establishment import Establishment

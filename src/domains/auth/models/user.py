@@ -1,7 +1,6 @@
-from typing import Optional, TYPE_CHECKING, List
+from typing import Optional, List
 from sqlmodel import Field, Relationship, SQLModel
 from pydantic import EmailStr
-
 
 from src.domains.auth.models.user_session import UserSession
 

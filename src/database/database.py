@@ -4,6 +4,7 @@ from sqlmodel import create_engine, Session, SQLModel
 # Importing all models
 # Import like this: from src.domains.task import models as task_models
 from src.domains.auth import models as auth_models
+from src.domains.customer import models as customer_models
 
 class Databases:
     LOCAL = "local_database.db"

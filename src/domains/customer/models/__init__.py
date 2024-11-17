@@ -1,1 +1,1 @@
-from src.domains.customer.models.establishment import Establishment
+from src.domains.customer.models.establishment import CustomerEstablishment

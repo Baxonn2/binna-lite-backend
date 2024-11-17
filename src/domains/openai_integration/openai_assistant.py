@@ -157,8 +157,8 @@ def add_customer(name: str, email: str, phone: str, age: Optional[int]) -> str:
     return f"Cliente {name} añadido correctamente."
 
 functions: List[AssistantToolParam] = [
-    FunctionParser(hello_user).as_tool_param(),
     FunctionParser(add_customer).as_tool_param(),
+    FunctionParser(hello_user).as_tool_param(),
 ]
 
 
@@ -181,15 +181,11 @@ class BinnaAssistantDescription:
             if tool.type == "function":
                 assistant_tools_as_dicts.append({
                     "type": tool.type,
-                    "function": {
-                        "name": tool.function.name,
-                        "description": tool.function.description,
-                        "parameters": tool.function.parameters
-                    }
+                    "function": tool.function.to_dict()
                 })
             else:
                 raise NotImplementedError(f"Unknown tool type: {tool.type}")
-        
+
         is_same_tools = json.dumps(
             assistant_tools_as_dicts,
             sort_keys=True

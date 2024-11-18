@@ -86,7 +86,7 @@ class FunctionParser:
             "parameters": self.function_parameters,
             "strict": self.strict_mode,
         }
-    
+
     def __parse_docstring(self, function):
         import re
 
@@ -135,38 +135,16 @@ class FunctionParser:
             "function": self.__get_function_description(),
         }
     
-def hello_user(name: str) -> str:
-    """
-    Responde con un saludo personalizado.
 
-    Args:
-    - name: Nombre del usuario a saludar.
-
-    Returns:
-    - str: un mensaje de saludo personalizado
-    """
-    return f"Hola! {name} <3"
-
-def add_customer(name: str, email: str, phone: str, age: Optional[int]) -> str:
-    """
-    Añade un nuevo cliente a la base de datos.
-
-    Args:
-    - name: Nombre del cliente.
-    - email: Correo del cliente.
-    - phone: Teléfono del cliente.
-    - age: Edad del cliente.
-
-    Returns:
-    - str: Mensaje de confirmación.
-    """
-    return f"Cliente {name} añadido correctamente."
-
+# Functions to be used as tools
+# DocStrings are used to generate the description of the tool.
 functions: List[AssistantToolParam] = [
-    FunctionParser(add_customer).as_tool_param(),
-    FunctionParser(hello_user).as_tool_param(),
     FunctionParser(EstablishmentController.create_customer).as_tool_param(),
     FunctionParser(EstablishmentController.get_all_customer).as_tool_param(),
+    FunctionParser(EstablishmentController.get_customer_by_id).as_tool_param(),
+    FunctionParser(EstablishmentController.update_customer).as_tool_param(),
+    FunctionParser(EstablishmentController.delete_customer).as_tool_param(),
+    FunctionParser(EstablishmentController.get_customer_by_name).as_tool_param(),
 ]
 
 

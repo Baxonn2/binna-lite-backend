@@ -6,6 +6,7 @@ from src.domains.openai_integration import Ignored
 
 class EstablishmentController:
 
+
     @staticmethod
     def create_customer(
         db: Ignored[Session],
@@ -38,6 +39,7 @@ class EstablishmentController:
 
         return new_customer
     
+
     def get_all_customer(
         db: Ignored[Session],
         user_id: Ignored[int]
@@ -53,3 +55,114 @@ class EstablishmentController:
         )
 
         return db.exec(query).all()
+    
+
+    def get_customer_by_id(
+        db: Ignored[Session],
+        user_id: Ignored[int],
+        customer_id: Ignored[int]
+    ) -> Optional[CustomerEstablishment]:
+        """
+        Obtiene un cliente registrado por el usuario.
+
+        Returns:
+         - Optional[CustomerEstablishment]: Cliente registrado por el usuario.
+        """
+        query = select(CustomerEstablishment).where(
+            CustomerEstablishment.user_id == user_id,
+            CustomerEstablishment.id == customer_id
+        )
+
+        return db.exec(query).first()
+    
+
+    def update_customer(
+        db: Ignored[Session],
+        user_id: Ignored[int],
+        customer_id: Ignored[int],
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        industry: Optional[str] = None
+    ) -> Optional[CustomerEstablishment]:
+        """
+        Actualiza un cliente registrado por el usuario.
+
+        Returns:
+         - Optional[CustomerEstablishment]: Cliente actualizado.
+        """
+        customer = EstablishmentController.get_customer_by_id(db, user_id, customer_id)
+
+        if customer is None:
+            return None
+
+        if name is not None:
+            customer.name = name
+        if description is not None:
+            customer.description = description
+        if industry is not None:
+            customer.industry = industry
+
+        db.add(customer)
+        db.commit()
+        db.refresh(customer)
+
+        return customer
+    
+
+    def delete_customer(
+        db: Ignored[Session],
+        user_id: Ignored[int],
+        customer_id: Ignored[int]
+    ) -> Optional[CustomerEstablishment]:
+        """
+        Elimina un cliente registrado por el usuario.
+
+        Returns:
+         - Optional[CustomerEstablishment]: Cliente eliminado.
+        """
+        customer = EstablishmentController.get_customer_by_id(db, user_id, customer_id)
+
+        if customer is None:
+            return None
+
+        customer.is_deleted = True
+
+        db.add(customer)
+        db.commit()
+        db.refresh(customer)
+
+        return customer
+    
+
+    def get_customer_by_name(
+        db: Ignored[Session],
+        user_id: Ignored[int],
+        name: str,
+        use_fuzzy_search: Optional[bool] = False
+    ) -> Optional[CustomerEstablishment]:
+        """
+        Obtiene un cliente registrado por el usuario.
+
+        Args:
+        - use_fuzzy_search: Si es verdadero, se buscará un cliente con un nombre similar al proporcionado.
+
+        Returns:
+         - Optional[CustomerEstablishment]: Cliente registrado por el usuario.
+        """
+        query = select(CustomerEstablishment).where(
+            CustomerEstablishment.user_id == user_id,
+            CustomerEstablishment.name == name
+        )
+
+        customer_matched = db.exec(query).first()
+
+        if customer_matched or not use_fuzzy_search:
+            return customer_matched
+        
+        # If not found, try to find a customer with a similar name
+        query = select(CustomerEstablishment).where(
+            CustomerEstablishment.user_id == user_id,
+            CustomerEstablishment.name.like(f"%{name}%")
+        )
+    
+        return db.exec(query).first()

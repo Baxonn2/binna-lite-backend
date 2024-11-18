@@ -79,13 +79,19 @@ class EstablishmentController:
     def update_customer(
         db: Ignored[Session],
         user_id: Ignored[int],
-        customer_id: Ignored[int],
+        customer_id: int,
         name: Optional[str] = None,
         description: Optional[str] = None,
         industry: Optional[str] = None
     ) -> Optional[CustomerEstablishment]:
         """
         Actualiza un cliente registrado por el usuario.
+
+        Args:
+        - name: Nombre del cliente que se va a registrar.
+        - description: Descripción detallada de la empresa.
+        - industry: Industria a la que pertenece la empresa (Se puede interpretar de la descripción del cliente).
+        - customer_id: Identificador del cliente que se va a actualizar.
 
         Returns:
          - Optional[CustomerEstablishment]: Cliente actualizado.

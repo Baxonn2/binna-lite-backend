@@ -4,6 +4,7 @@ from openai.types.beta.threads import Text
 from sqlmodel import Session, select
 from typing_extensions import override
 import json
+from src.domains.openai_integration.openai_assistant import BinnaAssistantDescription
 
 
 DetailItem = TypedDict("DetailItem", {"title": str, "subtitle": str, "icon": str})
@@ -110,16 +111,32 @@ class EventHandler(AssistantEventHandler):
             print(f"Tool call: {tool.function.name}")
 
         for tool in data.required_action.submit_tool_outputs.tool_calls:
-            if tool.function.name == "get_saved_customers":
-                tool_outputs.append(self.__make_tool_output(
-                    tool_call_id=tool.id,
-                    success=True,
-                    function_name="Obtener clientes",
-                    message="Clientes recuperados exitosamente",
-                    customers=['Cliente de prueba 1', 'Cliente de prueba 2']
-                ))
+            arguments = json.loads(tool.function.arguments)
+            automatic_registered_tool_output = BinnaAssistantDescription.call_function_tool(
+                function_name=tool.function.name,
+                db=self.db,
+                user_id=1,
+                **arguments
+            )
+            tool_outputs.append(self.__make_tool_output(
+                tool_call_id=tool.id,
+                success=automatic_registered_tool_output is not None,
+                function_name=tool.function.name,
+                message="Successfully executed tool",
+                output=automatic_registered_tool_output
+            ))
+
+            # if tool.function.name == "get_saved_customers":
+            #     tool_outputs.append(self.__make_tool_output(
+            #         tool_call_id=tool.id,
+            #         success=True,
+            #         function_name="Obtener clientes",
+            #         message="Clientes recuperados exitosamente",
+            #         customers=['Cliente de prueba 1', 'Cliente de prueba 2']
+            #     ))
             
 
         self.tool_outputs = tool_outputs
         self.executing_tool = False
+
         

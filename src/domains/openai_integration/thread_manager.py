@@ -42,6 +42,7 @@ class ThreadManager:
                 content=input_message
             )
 
+        # TODO: add user_id to event_handler
         event_handler = EventHandler(self.db)
 
         # Stream result assistant response

@@ -1,8 +1,11 @@
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 from sqlmodel import Field, Relationship, SQLModel
 from pydantic import EmailStr
 
 from src.domains.auth.models.user_session import UserSession
+
+if TYPE_CHECKING:
+    from src.domains.customer.models.establishment import CustomerEstablishment
 
 class UserBase(SQLModel):
     username: str
@@ -19,6 +22,8 @@ class User(UserBase, table = True):
 
     hashed_password: str
     user_session: List[UserSession] = Relationship(back_populates= "user")
+
+    establishments: List["CustomerEstablishment"] = Relationship(back_populates="user")
 
 class UserInDB(UserBase):
     hashed_password: str

@@ -136,16 +136,19 @@ class FunctionParser:
         }
     
 
+# Map the function names to the actual functions
+function_name_map = {
+    "create_customer": EstablishmentController.create_customer,
+    "get_all_customer": EstablishmentController.get_all_customer,
+    "get_customer_by_id": EstablishmentController.get_customer_by_id,
+    "update_customer": EstablishmentController.update_customer,
+    "delete_customer": EstablishmentController.delete_customer,
+    "get_customer_by_name": EstablishmentController.get_customer_by_name,   
+}
+
 # Functions to be used as tools
 # DocStrings are used to generate the description of the tool.
-functions: List[AssistantToolParam] = [
-    FunctionParser(EstablishmentController.create_customer).as_tool_param(),
-    FunctionParser(EstablishmentController.get_all_customer).as_tool_param(),
-    FunctionParser(EstablishmentController.get_customer_by_id).as_tool_param(),
-    FunctionParser(EstablishmentController.update_customer).as_tool_param(),
-    FunctionParser(EstablishmentController.delete_customer).as_tool_param(),
-    FunctionParser(EstablishmentController.get_customer_by_name).as_tool_param(),
-]
+functions = [ FunctionParser(func).as_tool_param() for func in function_name_map.values() ]
 
 
 class BinnaAssistantDescription:
@@ -194,3 +197,10 @@ class BinnaAssistantDescription:
 
         return all(comparison_results.values())
 
+    @classmethod
+    def call_function_tool(cls, function_name: str, **kwargs):
+        if function_name in function_name_map:
+            function_to_call = function_name_map[function_name]
+            return function_to_call(**kwargs)
+        else:
+            raise ValueError(f"Function {function_name} not found in tools")

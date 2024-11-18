@@ -96,9 +96,7 @@ class FunctionParser:
         
         # Docstring sections
         description_match = re.search(r'^\s*(.*?)(?=\n\s*\n|Args:|Returns:)', docstring, re.DOTALL)
-        print("description_match", description_match)
         description = description_match.group(1).strip() if description_match else None
-        print("description", description)
 
         # Extract Args
         args_section_match = re.search(r"Args:\n((?:\s+- .*?\n)+)", docstring)

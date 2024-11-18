@@ -1,11 +1,11 @@
-from typing import List, TYPE_CHECKING, Optional, get_origin, get_args, Union
+from typing import List, TYPE_CHECKING, Optional, TypeVar, get_origin, get_args, Union
+from src.domains.openai_integration import IgnoreMe
+from src.domains.customer.controller import EstablishmentController
 from openai.types.beta.assistant_tool_param import AssistantToolParam
 from openai.types.beta.function_tool_param import FunctionToolParam
 from openai.types.beta.assistant import Assistant
 import json
 
-# if TYPE_CHECKING:
-#     from src.domains.openai_integration.openai_integration import openai
 
 binna_instructions = """\
 Eres un asistente llamada Binna. Estas enfocada a ayudar a todos los usuarios que requieran tu ayuda.
@@ -22,6 +22,10 @@ type_parser_map = {
 def check_is_optional(field):
     return get_origin(field) is Union and \
         type(None) in get_args(field)
+
+def check_is_ignored(field):
+    return get_origin(field) is Union and \
+        IgnoreMe in get_args(field)
 
 
 class FunctionParser:
@@ -55,6 +59,8 @@ class FunctionParser:
                 is_optional = True
                 self.strict_mode = False
                 param_type_name = get_args(param_type)[0].__name__
+            elif check_is_ignored(param_type):
+                continue
 
             elif not isinstance(param_type, type):
                 raise ValueError(
@@ -89,18 +95,20 @@ class FunctionParser:
             raise ValueError(f"Function {function.__name__} has no docstring")
         
         # Docstring sections
-        description_match = re.search(r'^(.*?)(?:\n\nArgs:|\n\nReturns:|\n\n)', docstring, re.DOTALL)
+        description_match = re.search(r'^\s*(.*?)(?=\n\s*\n|Args:|Returns:)', docstring, re.DOTALL)
+        print("description_match", description_match)
         description = description_match.group(1).strip() if description_match else None
+        print("description", description)
 
         # Extract Args
         args_section_match = re.search(r"Args:\n((?:\s+- .*?\n)+)", docstring)
-        if not args_section_match:
-            return {}
-        args_section = args_section_match.group(1)
-
-        arg_pattern = r"^\s*-\s+(\w+):\s*(.*)$"
-        matches = re.findall(arg_pattern, args_section, re.MULTILINE)
-        args = {arg: description for arg, description in matches}
+        if args_section_match:
+            args_section = args_section_match.group(1)
+            arg_pattern = r"^\s*-\s+(\w+):\s*(.*)$"
+            matches = re.findall(arg_pattern, args_section, re.MULTILINE)
+            args = {arg: description for arg, description in matches}
+        else:
+            args = {}
         
         # Extract Returns
         returns_section = re.search(r'Returns:\n((?:\s+- .*?\n)+)', docstring)
@@ -159,6 +167,8 @@ def add_customer(name: str, email: str, phone: str, age: Optional[int]) -> str:
 functions: List[AssistantToolParam] = [
     FunctionParser(add_customer).as_tool_param(),
     FunctionParser(hello_user).as_tool_param(),
+    FunctionParser(EstablishmentController.create_customer).as_tool_param(),
+    FunctionParser(EstablishmentController.get_all_customer).as_tool_param(),
 ]
 
 

@@ -40,6 +40,7 @@ class EstablishmentController:
         return new_customer
     
 
+    @staticmethod
     def get_all_customer(
         db: Ignored[Session],
         user_id: Ignored[int]
@@ -57,7 +58,7 @@ class EstablishmentController:
 
         return db.exec(query).all()
     
-
+    @staticmethod
     def get_customer_by_id(
         db: Ignored[Session],
         user_id: Ignored[int],
@@ -76,7 +77,7 @@ class EstablishmentController:
 
         return db.exec(query).first()
     
-
+    @staticmethod
     def update_customer(
         db: Ignored[Session],
         user_id: Ignored[int],
@@ -116,6 +117,7 @@ class EstablishmentController:
         return customer
     
 
+    @staticmethod
     def delete_customer(
         db: Ignored[Session],
         user_id: Ignored[int],
@@ -144,6 +146,7 @@ class EstablishmentController:
         return customer
     
 
+    @staticmethod
     def get_customer_by_name(
         db: Ignored[Session],
         user_id: Ignored[int],

@@ -6,6 +6,8 @@ from src.domains.openai_integration import Ignored
 
 class AdditionalNoteController:
 
+
+    @staticmethod
     def create_additional_note(
         db: Ignored[Session],
         customer_id: int,
@@ -39,7 +41,9 @@ class AdditionalNoteController:
         db.refresh(new_note)
 
         return new_note
-    
+
+
+    @staticmethod
     def get_all_additional_notes_summarized(
         db: Ignored[Session],
         customer_id: int
@@ -67,6 +71,7 @@ class AdditionalNoteController:
         return db.exec(query).all()
 
 
+    @staticmethod
     def get_all_additional_notes(
         db: Ignored[Session],
         customer_id: int
@@ -89,7 +94,8 @@ class AdditionalNoteController:
 
         return db.exec(query).all()
 
-    
+
+    @staticmethod    
     def get_additional_note(
         db: Ignored[Session],
         note_id: int
@@ -134,6 +140,7 @@ class AdditionalNoteController:
         return note
     
 
+    @staticmethod
     def update_additional_note(
         db: Ignored[Session],
         note_id: int,

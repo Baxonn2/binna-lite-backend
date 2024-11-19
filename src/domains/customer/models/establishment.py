@@ -7,6 +7,7 @@ from src.domains.auth.models.user import User
 
 if TYPE_CHECKING:
     from src.domains.customer.models.additional_note import AdditionalNote
+    from src.domains.customer.models.contact import Contact
 
 class CustomerEstablishmentBase(SQLModel):
     name: str
@@ -22,6 +23,7 @@ class CustomerEstablishment(CustomerEstablishmentBase, DeletableModel, table=Tru
     user: "User" = Relationship(back_populates="establishments")
 
     additional_notes: list["AdditionalNote"] = Relationship(back_populates="customer_establishment")
+    contacts: list["Contact"] = Relationship(back_populates="establishment")
 
 class CustomerEstablishmentResponse(CustomerEstablishmentBase):
     id: int

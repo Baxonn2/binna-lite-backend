@@ -6,6 +6,7 @@ from src.domains.auth.models.user_session import UserSession
 
 if TYPE_CHECKING:
     from src.domains.customer.models.establishment import CustomerEstablishment
+    from src.domains.customer.models.contact import Contact
 
 class UserBase(SQLModel):
     username: str
@@ -24,6 +25,7 @@ class User(UserBase, table = True):
     user_session: List[UserSession] = Relationship(back_populates= "user")
 
     establishments: List["CustomerEstablishment"] = Relationship(back_populates="user")
+    contacts: List["Contact"] = Relationship(back_populates="user")
 
 class UserInDB(UserBase):
     hashed_password: str

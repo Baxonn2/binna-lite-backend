@@ -3,6 +3,7 @@ from typing import List, get_origin, get_args, Union
 from src.domains.openai_integration import IgnoreMe
 from src.domains.customer.controllers.additional_note_controller import AdditionalNoteController
 from src.domains.customer.controllers.establishment_controller import EstablishmentController
+from src.domains.customer.controllers.contact_controller import ContactController
 from openai.types.beta.assistant_tool_param import AssistantToolParam
 from openai.types.beta.function_tool_param import FunctionToolParam
 from openai.types.beta.assistant import Assistant
@@ -155,6 +156,13 @@ function_name_map = {
     "get_additional_note": AdditionalNoteController.get_additional_note,
     "update_additional_note": AdditionalNoteController.update_additional_note,
     "delete_additional_note": AdditionalNoteController.delete_additional_note,
+
+    # Contact methods
+    "create_contact": ContactController.create_contact,
+    "get_all_contacts": ContactController.get_all_contacts,
+    "get_contact": ContactController.get_contact,
+    "update_contact": ContactController.update_contact,
+    "delete_contact": ContactController.delete_contact,
 }
 
 # Functions to be used as tools

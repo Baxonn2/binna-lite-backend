@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 from typing_extensions import override
 import json
 from src.domains.openai_integration.openai_assistant import BinnaAssistantDescription
+from src.domains.auth.models.user import User
 
 
 DetailItem = TypedDict("DetailItem", {"title": str, "subtitle": str, "icon": str})
@@ -18,8 +19,9 @@ class EventHandler(AssistantEventHandler):
     tool_outputs = None
     executing_tool = False
 
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, user: User):
         self.db = db
+        self.user = user
         super().__init__()
 
     @override
@@ -108,14 +110,14 @@ class EventHandler(AssistantEventHandler):
         tool_outputs = []
 
         for tool in data.required_action.submit_tool_outputs.tool_calls:
-            print(f"Tool call: {tool.function.name}")
+            print(f"Tool call (user_id: {self.user.id}): {tool.function.name}")
 
         for tool in data.required_action.submit_tool_outputs.tool_calls:
             arguments = json.loads(tool.function.arguments)
             automatic_registered_tool_output = BinnaAssistantDescription.call_function_tool(
                 function_name=tool.function.name,
                 db=self.db,
-                user_id=1,
+                user_id=self.user.id,
                 **arguments
             )
             tool_outputs.append(self.__make_tool_output(

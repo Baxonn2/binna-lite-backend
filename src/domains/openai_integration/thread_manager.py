@@ -42,8 +42,7 @@ class ThreadManager:
                 content=input_message
             )
 
-        # TODO: add user_id to event_handler
-        event_handler = EventHandler(self.db)
+        event_handler = EventHandler(self.db, self.user)
 
         # Stream result assistant response
         with openai.beta.threads.runs.stream(
@@ -69,7 +68,7 @@ class ThreadManager:
         Args:
             tool_outputs (list[dict]): The tool outputs to send to the assistant
         """
-        event_handler = EventHandler(self.db)
+        event_handler = EventHandler(self.db, self.user)
 
         with openai.beta.threads.runs.submit_tool_outputs_stream(
             thread_id=self.thread.id,

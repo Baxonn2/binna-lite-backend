@@ -1,5 +1,4 @@
 from typing import Optional
-from fastapi import Request
 from sqlmodel import Session, select
 from src.domains.customer.models.establishment import CustomerEstablishment
 from src.domains.openai_integration import Ignored
@@ -62,10 +61,13 @@ class EstablishmentController:
     def get_customer_by_id(
         db: Ignored[Session],
         user_id: Ignored[int],
-        customer_id: Ignored[int]
+        customer_id: int
     ) -> Optional[CustomerEstablishment]:
         """
         Obtiene un cliente registrado por el usuario.
+
+        Args:
+        - customer_id: Identificador del cliente que se va a buscar.
 
         Returns:
          - Optional[CustomerEstablishment]: Cliente registrado por el usuario.

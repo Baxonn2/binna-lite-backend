@@ -1,6 +1,8 @@
-from typing import List, TYPE_CHECKING, Optional, TypeVar, get_origin, get_args, Union
+import inspect
+from typing import List, get_origin, get_args, Union
 from src.domains.openai_integration import IgnoreMe
-from src.domains.customer.controller import EstablishmentController
+from src.domains.customer.controllers.additional_note_controller import AdditionalNoteController
+from src.domains.customer.controllers.establishment_controller import EstablishmentController
 from openai.types.beta.assistant_tool_param import AssistantToolParam
 from openai.types.beta.function_tool_param import FunctionToolParam
 from openai.types.beta.assistant import Assistant
@@ -138,12 +140,21 @@ class FunctionParser:
 
 # Map the function names to the actual functions
 function_name_map = {
+    # Customer Establishment methods
     "create_customer": EstablishmentController.create_customer,
     "get_all_customer": EstablishmentController.get_all_customer,
     "get_customer_by_id": EstablishmentController.get_customer_by_id,
     "update_customer": EstablishmentController.update_customer,
     "delete_customer": EstablishmentController.delete_customer,
     "get_customer_by_name": EstablishmentController.get_customer_by_name,   
+
+    # Additional Note methods
+    "create_additional_note": AdditionalNoteController.create_additional_note,
+    "get_all_additional_notes": AdditionalNoteController.get_all_additional_notes,
+    "get_all_additional_notes_summarized": AdditionalNoteController.get_all_additional_notes_summarized,
+    "get_additional_note": AdditionalNoteController.get_additional_note,
+    "update_additional_note": AdditionalNoteController.update_additional_note,
+    "delete_additional_note": AdditionalNoteController.delete_additional_note,
 }
 
 # Functions to be used as tools
@@ -201,6 +212,12 @@ class BinnaAssistantDescription:
     def call_function_tool(cls, function_name: str, **kwargs):
         if function_name in function_name_map:
             function_to_call = function_name_map[function_name]
-            return function_to_call(**kwargs)
+            
+            signature = inspect.signature(function_to_call)
+            expected_params = signature.parameters.keys()
+
+            filtered_args = {k: v for k, v in kwargs.items() if k in expected_params}
+
+            return function_to_call(**filtered_args)
         else:
             raise ValueError(f"Function {function_name} not found in tools")

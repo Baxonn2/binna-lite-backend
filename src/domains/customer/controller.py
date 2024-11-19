@@ -51,7 +51,8 @@ class EstablishmentController:
          - list[CustomerEstablishment]: lista con todos los clientes registrados por el usuario.
         """
         query = select(CustomerEstablishment).where(
-            CustomerEstablishment.user_id == user_id
+            CustomerEstablishment.user_id == user_id,
+            CustomerEstablishment.deleted == False
         )
 
         return db.exec(query).all()
@@ -118,10 +119,13 @@ class EstablishmentController:
     def delete_customer(
         db: Ignored[Session],
         user_id: Ignored[int],
-        customer_id: Ignored[int]
+        customer_id: int
     ) -> Optional[CustomerEstablishment]:
         """
         Elimina un cliente registrado por el usuario.
+
+        Args:
+        - customer_id: Identificador del cliente que se va a eliminar.
 
         Returns:
          - Optional[CustomerEstablishment]: Cliente eliminado.
@@ -131,7 +135,7 @@ class EstablishmentController:
         if customer is None:
             return None
 
-        customer.is_deleted = True
+        customer.deleted = True
 
         db.add(customer)
         db.commit()
@@ -150,6 +154,7 @@ class EstablishmentController:
         Obtiene un cliente registrado por el usuario.
 
         Args:
+        - name: Nombre del cliente que se va a buscar.
         - use_fuzzy_search: Si es verdadero, se buscará un cliente con un nombre similar al proporcionado.
 
         Returns:

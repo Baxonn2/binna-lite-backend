@@ -114,6 +114,8 @@ class EventHandler(AssistantEventHandler):
 
         for tool in data.required_action.submit_tool_outputs.tool_calls:
             arguments = json.loads(tool.function.arguments)
+            print(f"Arguments: {arguments}")
+
             automatic_registered_tool_output = BinnaAssistantDescription.call_function_tool(
                 function_name=tool.function.name,
                 db=self.db,

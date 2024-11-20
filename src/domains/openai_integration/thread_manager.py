@@ -49,7 +49,7 @@ class ThreadManager:
             thread_id=self.thread.id,
             assistant_id=assistant.id,
             event_handler=event_handler,
-            additional_instructions= "context: " + json.dumps(self.get_context_data())
+            additional_instructions= "contexto: " + json.dumps(self.get_context_data())
         ) as stream:
             yield from stream.text_deltas
             stream.until_done()
@@ -96,10 +96,13 @@ class ThreadManager:
         # } for customer in customers]
 
         #print("Context data", customers_resume)
-        print("Context data", str(self.user.username))
-
-        return {
+        
+        context = {
             "username": str(self.user.username),
-            "local_time": datetime.now().isoformat(),
+            "current_datetime": datetime.now().isoformat(),
+            "current_day": datetime.now().strftime("%A"),
             #"saved_customers_resume": customers_resume,
         }
+
+        print("Context data", context)
+        return context

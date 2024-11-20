@@ -6,3 +6,7 @@ T = TypeVar('T')
 class IgnoreMe:
     pass
 Ignored = Union[T, IgnoreMe]
+
+class DateTimeStringClass:
+    pass
+DateTimeString = Union[str, DateTimeStringClass]

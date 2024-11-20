@@ -1,9 +1,10 @@
 import inspect
 from typing import List, get_origin, get_args, Union
-from src.domains.openai_integration import IgnoreMe
+from src.domains.openai_integration import IgnoreMe, DateTimeStringClass
 from src.domains.customer.controllers.additional_note_controller import AdditionalNoteController
 from src.domains.customer.controllers.establishment_controller import EstablishmentController
 from src.domains.customer.controllers.contact_controller import ContactController
+from src.domains.customer.controllers.task_controller import TaskController
 from openai.types.beta.assistant_tool_param import AssistantToolParam
 from openai.types.beta.function_tool_param import FunctionToolParam
 from openai.types.beta.assistant import Assistant
@@ -12,14 +13,19 @@ import json
 
 binna_instructions = """\
 Eres un asistente llamada Binna. Estas enfocada a ayudar a todos los usuarios que requieran tu ayuda.
-Tu misión es apoyar a el desarrollo y cierre de ventas B2B :D.
+Tu misión es apoyar a el desarrollo y cierre de ventas B2B.
 """
 
 type_parser_map = {
     'str': 'string',
     "int": "number",
     "float": "number",
-    "bool": "boolean"
+    "bool": "boolean",
+    "datetime": "string",
+}
+
+type_regex_map = {
+    "datetime": r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$"
 }
 
 def check_is_optional(field):
@@ -29,6 +35,10 @@ def check_is_optional(field):
 def check_is_ignored(field):
     return get_origin(field) is Union and \
         IgnoreMe in get_args(field)
+
+def check_is_datetime_string(field):
+    return get_origin(field) is Union and \
+        DateTimeStringClass in get_args(field)
 
 
 class FunctionParser:
@@ -62,6 +72,7 @@ class FunctionParser:
                 is_optional = True
                 self.strict_mode = False
                 param_type_name = get_args(param_type)[0].__name__
+                param_type = get_args(param_type)[0]
             elif check_is_ignored(param_type):
                 continue
 
@@ -69,10 +80,18 @@ class FunctionParser:
                 raise ValueError(
                     f"Invalid type for parameter {param_name} in function {self.function_name}"
                 )
+            
+            if check_is_datetime_string(param_type):
+                param_type_name = "datetime"
+
             self.function_parameters['properties'][param_name] = {
                 "type": type_parser_map[param_type_name],
                 "description": parsed_docstring["args"].get(param_name, ""),
             }
+
+            # Adding pattern for specific types
+            if type_regex_map.get(param_type_name):
+                self.function_parameters['properties'][param_name]["pattern"] = type_regex_map[param_type_name]
 
             if not is_optional:
                 required_properties.append(param_name)
@@ -163,6 +182,12 @@ function_name_map = {
     "get_contact": ContactController.get_contact,
     "update_contact": ContactController.update_contact,
     "delete_contact": ContactController.delete_contact,
+
+    # Task methods
+    "create_task": TaskController.create_task,
+    "get_all_tasks": TaskController.get_all_tasks,
+    "update_task": TaskController.update_task,
+    "delete_task": TaskController.delete_task,
 }
 
 # Functions to be used as tools

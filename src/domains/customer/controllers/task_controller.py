@@ -75,6 +75,30 @@ class TaskController:
     
     
     @staticmethod
+    def get_task(
+        db: Ignored[Session],
+        user_id: Ignored[int],
+        task_id: int
+    ) -> Task:
+        """
+        Obtiene una tarea registrada por el usuario.
+
+        Args:
+         - task_id: ID de la tarea que se va a obtener.
+
+        Returns:
+         - Task: La tarea solicitada.
+        """
+        query = select(Task).where(
+            Task.id == task_id,
+            Task.user_id == user_id,
+            Task.deleted == False
+        )
+
+        return db.exec(query).first()
+    
+    
+    @staticmethod
     def update_task(
         db: Ignored[Session],
         user_id: Ignored[int],
@@ -97,7 +121,7 @@ class TaskController:
         Returns:
          - Task: La tarea actualizada.
         """
-        task = db.get(Task, task_id)
+        task = TaskController.get_task(db, user_id, task_id)
 
         if not task:
             return None
@@ -132,7 +156,7 @@ class TaskController:
         Returns:
          - Task: La tarea eliminada.
         """
-        task = db.get(Task, task_id)
+        task = TaskController.get_task(db, user_id, task_id)
 
         if not task:
             return None

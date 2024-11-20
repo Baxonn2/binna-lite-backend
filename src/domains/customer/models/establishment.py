@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from src.domains.customer.models.additional_note import AdditionalNote
     from src.domains.customer.models.contact import Contact
     from src.domains.customer.models.task import Task
+    from src.domains.customer.models.opportunity import Opportunity
 
 class CustomerEstablishmentBase(SQLModel):
     name: str
@@ -26,6 +27,7 @@ class CustomerEstablishment(CustomerEstablishmentBase, DeletableModel, table=Tru
     additional_notes: list["AdditionalNote"] = Relationship(back_populates="customer_establishment")
     contacts: list["Contact"] = Relationship(back_populates="establishment")
     tasks: list["Task"] = Relationship(back_populates="establishment")
+    opportunities: list["Opportunity"] = Relationship(back_populates="customer_establishment")
 
 class CustomerEstablishmentResponse(CustomerEstablishmentBase):
     id: int

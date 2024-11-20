@@ -23,8 +23,16 @@ class EstablishmentController:
          - industry: Industria a la que pertenece la empresa (Se puede interpretar de la descripción del cliente).
 
         Returns:
-         - CustomerEstablishment: El nuevo cliente registrado.
+         - CustomerEstablishment: El nuevo cliente registrado. Si ya existe un cliente con el mismo
+           nombre se retornará el cliente existente.
         """
+        existing_customer = EstablishmentController.get_customer_by_name(
+            db, user_id, name, use_fuzzy_search=True
+        )
+
+        if existing_customer:
+            return existing_customer
+
         new_customer = CustomerEstablishment(
             name=name,
             description=description,
@@ -178,7 +186,12 @@ class EstablishmentController:
         # If not found, try to find a customer with a similar name
         query = select(CustomerEstablishment).where(
             CustomerEstablishment.user_id == user_id,
-            CustomerEstablishment.name.like(f"%{name}%")
         )
     
-        return db.exec(query).first()
+        customers = db.exec(query).all()
+
+        for customer in customers:
+            if name.lower() in customer.name.lower():
+                return customer
+        
+        return None

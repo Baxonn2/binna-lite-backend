@@ -4,7 +4,9 @@ from src.domains.chat.models import MessageCreate
 from src.domains.openai_integration.thread_manager import ThreadManager
 
 def send_message(db: Session, message: MessageCreate, user: User):
-    return ThreadManager(message.thread_id, db, user).stream_response(message.content)
+    return ThreadManager(
+        message.thread_id, db, user
+    ).stream_response(message.content)
 
 def create_thread(db: Session, user: User):
     return ThreadManager(None, db, user).thread.id

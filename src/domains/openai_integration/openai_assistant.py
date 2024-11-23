@@ -9,6 +9,7 @@ from src.domains.customer.controllers.opportunity_controller import OpportunityC
 from openai.types.beta.assistant_tool_param import AssistantToolParam
 from openai.types.beta.function_tool_param import FunctionToolParam
 from openai.types.beta.assistant import Assistant
+from openai.types.chat_model import ChatModel
 import json
 
 
@@ -169,26 +170,26 @@ function_name_map = {
     "delete_customer": EstablishmentController.delete_customer,
     "get_customer_by_name": EstablishmentController.get_customer_by_name,   
 
-    # # Additional Note methods
-    # "create_additional_note": AdditionalNoteController.create_additional_note,
-    # "get_all_additional_notes": AdditionalNoteController.get_all_additional_notes,
-    # "get_all_additional_notes_summarized": AdditionalNoteController.get_all_additional_notes_summarized,
-    # "get_additional_note": AdditionalNoteController.get_additional_note,
-    # "update_additional_note": AdditionalNoteController.update_additional_note,
-    # "delete_additional_note": AdditionalNoteController.delete_additional_note,
+    # Additional Note methods
+    "create_additional_note": AdditionalNoteController.create_additional_note,
+    "get_all_additional_notes": AdditionalNoteController.get_all_additional_notes,
+    "get_all_additional_notes_summarized": AdditionalNoteController.get_all_additional_notes_summarized,
+    "get_additional_note": AdditionalNoteController.get_additional_note,
+    "update_additional_note": AdditionalNoteController.update_additional_note,
+    "delete_additional_note": AdditionalNoteController.delete_additional_note,
 
-    # # Contact methods
-    # "create_contact": ContactController.create_contact,
-    # "get_all_contacts": ContactController.get_all_contacts,
-    # "get_contact": ContactController.get_contact,
-    # "update_contact": ContactController.update_contact,
-    # "delete_contact": ContactController.delete_contact,
+    # Contact methods
+    "create_contact": ContactController.create_contact,
+    "get_all_contacts": ContactController.get_all_contacts,
+    "get_contact": ContactController.get_contact,
+    "update_contact": ContactController.update_contact,
+    "delete_contact": ContactController.delete_contact,
 
-    # # Task methods
-    # "create_task": TaskController.create_task,
-    # "get_all_tasks": TaskController.get_all_tasks,
-    # "update_task": TaskController.update_task,
-    # "delete_task": TaskController.delete_task,
+    # Task methods
+    "create_task": TaskController.create_task,
+    "get_all_tasks": TaskController.get_all_tasks,
+    "update_task": TaskController.update_task,
+    "delete_task": TaskController.delete_task,
 
     # Opportunity methods
     "create_opportunity": OpportunityController.create_opportunity,
@@ -204,7 +205,7 @@ functions = [ FunctionParser(func).as_tool_param() for func in function_name_map
 
 
 class BinnaAssistantDescription:
-    model = "gpt-3.5-turbo-0125"
+    model: ChatModel = "gpt-4o-mini"
     name = "Binna Lite V0.0.1"
     description = "Una versión más ligera de Binna, con menos parámetros y menos capacidad de respuesta."
     instructions = binna_instructions

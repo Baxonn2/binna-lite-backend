@@ -17,7 +17,9 @@ def send_message(
     user: User = Depends(get_current_active_user),
     db: Session = Depends(database.get_db_session)
 ):
-    return StreamingResponse(chat_controller.send_message(db, message, user))
+    return StreamingResponse(
+        chat_controller.send_message(db, message, user)
+    )
 
 @router.post("/create")
 def create(

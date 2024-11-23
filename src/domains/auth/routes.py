@@ -56,6 +56,17 @@ def login(
         )
     return save_user_session(db, user_session)
 
+@router.post("/logout")
+def logout(
+    current_session: Annotated[UserSession, Depends(get_current_session)],
+    db: Session = Depends(database.get_db_session)
+) -> None:
+    session = db.get(UserSession, current_session.id)
+    session.deleted = True  
+    
+    db.commit()
+    return None
+
 @router.get("/me", response_model=UserResponse)
 def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)],

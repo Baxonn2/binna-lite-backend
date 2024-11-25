@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 origins = [
     "http://localhost",
     "http://localhost:8080",
+    "https://open.binna.app"
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -52,10 +53,10 @@ def run_script(script_name: str):
 if __name__ == "__main__":
     process_args()
 
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8000,
-        log_level="debug"
-    )
+    # uvicorn.run(
+    #     app,
+    #     host="0.0.0.0",
+    #     port=8000,
+    #     log_level="debug"
+    # )
 

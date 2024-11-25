@@ -1,5 +1,6 @@
 from typing import Generator
 from sqlmodel import create_engine, Session, SQLModel
+import os
 
 # Importing all models
 # Import like this: from src.domains.task import models as task_models
@@ -7,8 +8,8 @@ from src.domains.auth import models as auth_models
 from src.domains.customer import models as customer_models
 
 class Databases:
-    LOCAL = "local_database.db"
-    TEST = "test_database.db"
+    LOCAL = os.path.join("db", "local_database.db")
+    TEST = os.path.join("db", "test_database.db")
 
 class Database:    
     def __init__(self, sqlite_file_name: str = Databases.LOCAL):

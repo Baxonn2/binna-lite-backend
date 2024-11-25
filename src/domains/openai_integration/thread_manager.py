@@ -2,8 +2,10 @@ from typing import Optional
 
 from sqlmodel import Session
 from src.domains.auth.models.user import User
+from src.domains.auth.models.user_usage import UserUsage
 from src.domains.openai_integration.openai_integration import openai, assistant
 from src.domains.openai_integration.event_handler import EventHandler
+from openai.types.beta.threads.run import Usage
 from datetime import datetime
 import json
 
@@ -61,6 +63,13 @@ class ThreadManager:
                 event_handler.tool_outputs
             )
 
+        run_usage = openai.beta.threads.runs.retrieve(
+            thread_id=self.thread.id,
+            run_id=event_handler.current_run.id
+        ).usage
+        
+        self.__save_usage(run_usage)
+
     def stream_tool_outputs(self, run_id: str, tool_outputs: list[dict]):
         """
         Stream the tool outputs of the assistant
@@ -106,3 +115,25 @@ class ThreadManager:
 
         print("Context data", context)
         return context
+
+    def __save_usage(self, usage: Usage):
+        """
+        Save the usage of the assistant
+
+        Args:
+            usage (Usage): token usage of the assistant
+        """
+        cached_tokens = usage.model_dump().get(
+            "prompt_tokens_detail", {}
+        ).get("cached_tokens", 0)
+
+        from src.domains.auth.controllers.user_usage_controller import UserUsageController
+
+        UserUsageController.registry_usage(
+            self.db,
+            self.user.id,
+            total_tokens=usage.total_tokens,
+            prompt_tokens=usage.prompt_tokens,
+            completion_tokens=usage.completion_tokens,
+            cached_tokens=cached_tokens
+        )

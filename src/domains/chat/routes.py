@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 from fastapi.responses import StreamingResponse
 from src.domains.auth.controller import get_current_active_user
@@ -7,6 +7,9 @@ from src.domains.auth.models.user import User
 from src.database.database import Database
 import src.domains.chat.controller as chat_controller
 from src.domains.chat.models import MessageCreate
+from src.domains.auth.controllers.user_usage_controller import (
+    UserTokenLimitIsReachedException, NotCurrentUsageLimitException
+)
 
 router = APIRouter(prefix="/chat",)
 database = Database()
@@ -17,9 +20,20 @@ def send_message(
     user: User = Depends(get_current_active_user),
     db: Session = Depends(database.get_db_session)
 ):
-    return StreamingResponse(
-        chat_controller.send_message(db, message, user)
-    )
+    try:
+        return StreamingResponse(
+            chat_controller.send_message(db, message, user)
+        )
+    except UserTokenLimitIsReachedException:
+        raise HTTPException(403, {
+            "detail": "Limite de tokens alcanzado",
+            "error_code": UserTokenLimitIsReachedException.__name__
+        })
+    except NotCurrentUsageLimitException:
+        raise HTTPException(403, {
+            "detail": "No se cuenta con una suscripción activa durante el periodo actual",
+            "error_code": NotCurrentUsageLimitException.__name__
+        })
 
 @router.post("/create")
 def create(

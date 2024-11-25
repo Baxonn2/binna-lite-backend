@@ -24,10 +24,12 @@ app.add_middleware(
 # Importing routes
 from src.domains.auth.routes import router as auth_router
 from src.domains.chat.routes import router as chat_router
+from src.domains.customer.routes import router as customer_router
 
 # Including routes
 app.include_router(auth_router)
 app.include_router(chat_router)
+app.include_router(customer_router)
 
 def process_args():
     import argparse

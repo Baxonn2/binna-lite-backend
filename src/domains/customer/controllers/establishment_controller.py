@@ -82,7 +82,8 @@ class EstablishmentController:
         """
         query = select(CustomerEstablishment).where(
             CustomerEstablishment.user_id == user_id,
-            CustomerEstablishment.id == customer_id
+            CustomerEstablishment.id == customer_id,
+            CustomerEstablishment.deleted == False
         )
 
         return db.exec(query).first()
@@ -175,7 +176,8 @@ class EstablishmentController:
         """
         query = select(CustomerEstablishment).where(
             CustomerEstablishment.user_id == user_id,
-            CustomerEstablishment.name == name
+            CustomerEstablishment.name == name,
+            CustomerEstablishment.deleted == False
         )
 
         customer_matched = db.exec(query).first()
@@ -186,6 +188,7 @@ class EstablishmentController:
         # If not found, try to find a customer with a similar name
         query = select(CustomerEstablishment).where(
             CustomerEstablishment.user_id == user_id,
+            CustomerEstablishment.deleted == False
         )
     
         customers = db.exec(query).all()

@@ -16,7 +16,7 @@ from src.domains.customer.controllers.opportunity_controller import OpportunityC
 @router.get("/")
 def get_all_establishments(
     db: Session = Depends(database.get_db_session),
-    user: User = Annotated[User, Depends(get_current_active_user)]
+    user: User = Depends(get_current_active_user)
 ):
     return EstablishmentController.get_all_customer(
         db=db, user_id=user.id
@@ -26,7 +26,7 @@ def get_all_establishments(
 def get_all_contacts(
     customer_id: int,
     db: Session = Depends(database.get_db_session),
-    user: User = Annotated[User, Depends(get_current_active_user)]
+    user: User = Depends(get_current_active_user)
 ):
     return ContactController.get_all_contacts(
         db=db, user_id=user.id, customer_id=customer_id
@@ -36,7 +36,7 @@ def get_all_contacts(
 @router.get("/opportunities")
 def get_all_opportunities(
     db: Session = Depends(database.get_db_session),
-    user: User = Annotated[User, Depends(get_current_active_user)]
+    user: User = Depends(get_current_active_user)
 ):
     return OpportunityController.get_all_opportunities(
         db=db, user_id=user.id

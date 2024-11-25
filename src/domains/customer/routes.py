@@ -11,6 +11,7 @@ database = Database()
 
 from src.domains.customer.controllers.establishment_controller import EstablishmentController
 from src.domains.customer.controllers.contact_controller import ContactController
+from src.domains.customer.controllers.opportunity_controller import OpportunityController
 
 @router.get("/")
 def get_all_establishments(
@@ -29,4 +30,14 @@ def get_all_contacts(
 ):
     return ContactController.get_all_contacts(
         db=db, user_id=user.id, customer_id=customer_id
+    )
+
+
+@router.get("/opportunities")
+def get_all_opportunities(
+    db: Session = Depends(database.get_db_session),
+    user: User = Annotated[User, Depends(get_current_active_user)]
+):
+    return OpportunityController.get_all_opportunities(
+        db=db, user_id=user.id
     )

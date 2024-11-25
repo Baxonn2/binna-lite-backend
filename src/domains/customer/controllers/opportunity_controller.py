@@ -100,7 +100,8 @@ class OpportunityController:
         opportunity_id: int,
         close_date: Optional[DateTimeString] = None,
         price: Optional[float] = None,
-        notes: Optional[str] = None
+        notes: Optional[str] = None,
+        stage: Optional[str] = None
     ) -> Opportunity:
         """
         Actualiza los datos de una oportunidad de negocio registrada por el usuario.
@@ -110,6 +111,7 @@ class OpportunityController:
          - close_date: Fecha de cierre de la oportunidad. (Formato ISO 8601)
          - price: Valor monetario que se espera obtener de la oportunidad.
          - notes: Notas adicionales sobre la oportunidad.
+         - stage: Etapa en la que se encuentra la oportunidad (Pueden ser: "Prospección", "Calificación", "Propuesta técnica", "Negociación" o "Cierre").
 
         Returns:
          - Opportunity: La oportunidad de negocio actualizada.
@@ -127,6 +129,8 @@ class OpportunityController:
             opportunity.price = price
         if notes is not None:
             opportunity.notes = notes
+        if stage is not None:
+            opportunity.stage = stage
 
         db.commit()
         db.refresh(opportunity)

@@ -4,6 +4,7 @@ from datetime import datetime
 
 from src.domains.openai_integration import Ignored, DateTimeString
 from src.domains.customer.models.meet import Meet
+from src.domains.customer.models.meet_contact import MeetContact
 
 
 class MeetController:
@@ -19,7 +20,8 @@ class MeetController:
         status: str,
         description: Optional[str] = None,
         address: Optional[str] = None,
-        opportunity_id: Optional[int] = None
+        opportunity_id: Optional[int] = None,
+        contact_ids: Optional[str] = None
     ):
         """
         Registra una nueva reunión en la base de datos del usuario.
@@ -33,7 +35,8 @@ class MeetController:
          - description: Descripción detallada de la reunión.
          - address: Dirección donde se llevará a cabo la reunión.
          - opportunity_id: ID de la oportunidad relacionada con la reunión.
-
+         - contact_ids: IDs de los contactos relacionados con la reunión. (Si son varios, se separan por comas)
+         
         Returns:
          - Meet: La nueva reunión registrada.
         """
@@ -51,6 +54,14 @@ class MeetController:
             opportunity_id=opportunity_id
         )
 
+        if contact_ids:
+            for contact_id in contact_ids.split(','):
+                new_meet_contact = MeetContact(
+                    meet_id=new_meet.id,
+                    contact_id=int(contact_id)
+                )
+                db.add(new_meet_contact)
+
         db.add(new_meet)
         db.commit()
         db.refresh(new_meet)
@@ -64,7 +75,7 @@ class MeetController:
         user_id: Ignored[int],
         customer_id: Optional[int] = None,
         from_date_filter: Optional[DateTimeString] = None,
-        to_date_filter: Optional[DateTimeString] = None
+        to_date_filter: Optional[DateTimeString] = None,
     ) -> list[Meet]:
         """
         Obtiene todas las reuniones registradas por el usuario.
@@ -130,7 +141,9 @@ class MeetController:
         duration_minutes: Optional[int] = None,
         status: Optional[str] = None,
         address: Optional[str] = None,
-        opportunity_id: Optional[int] = None
+        opportunity_id: Optional[int] = None,
+        contact_ids_to_add: Optional[str] = None,
+        contact_ids_to_remove: Optional[str] = None
     ) -> Meet:
         """
         Actualiza la información de una reunión registrada por el usuario.
@@ -143,6 +156,8 @@ class MeetController:
          - status: Estado actual de la reunión. (pending, completed, cancelled)
          - address: Dirección donde se llevará a cabo la reunión.
          - opportunity_id: ID de la oportunidad relacionada con la reunión.
+         - contact_ids_to_add: IDs de los contactos que se van a agregar a la reunión. (Si son varios, se separan por comas)
+         - contact_ids_to_remove: IDs de los contactos que se van a eliminar de la reunión. (Si son varios, se separan por comas)
 
         Returns:
             - Meet: La reunión actualizada.
@@ -166,6 +181,24 @@ class MeetController:
             meet.address = address
         if opportunity_id:
             meet.opportunity_id = opportunity_id
+
+
+        if contact_ids_to_add:
+            for contact_id in contact_ids_to_add.split(','):
+                new_meet_contact = MeetContact(
+                    meet_id=meet.id,
+                    contact_id=int(contact_id)
+                )
+                db.add(new_meet_contact)
+        
+        if contact_ids_to_remove:
+            for contact_id in contact_ids_to_remove.split(','):
+                meet_contact = db.exec(select(MeetContact).where(
+                    MeetContact.meet_id == meet.id,
+                    MeetContact.contact_id == int(contact_id)
+                )).first()
+                if meet_contact:
+                    db.delete(meet_contact)
 
         db.commit()
         db.refresh(meet)

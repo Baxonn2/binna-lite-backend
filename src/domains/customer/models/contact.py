@@ -5,6 +5,10 @@ from src.utils.base_models import DeletableModel
 
 from src.domains.auth.models.user import User
 from src.domains.customer.models.establishment import CustomerEstablishment
+from src.domains.customer.models.meet_contact import MeetContact
+
+if TYPE_CHECKING:
+    from src.domains.customer.models.meet import Meet
 
 class ContactBase(SQLModel):
     name: str
@@ -22,3 +26,5 @@ class Contact(ContactBase, DeletableModel, table=True):
 
     establishment_id: int = Field(foreign_key="customer_establishment.id")
     establishment: "CustomerEstablishment" = Relationship(back_populates="contacts")
+    
+    meets: list["Meet"] = Relationship(back_populates="contacts", link_model=MeetContact)

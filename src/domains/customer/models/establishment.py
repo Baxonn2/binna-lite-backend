@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from src.domains.customer.models.contact import Contact
     from src.domains.customer.models.task import Task
     from src.domains.customer.models.opportunity import Opportunity
+    from src.domains.customer.models.meet import Meet
 
 class CustomerEstablishmentBase(SQLModel):
     name: str
@@ -28,6 +29,7 @@ class CustomerEstablishment(CustomerEstablishmentBase, DeletableModel, table=Tru
     contacts: list["Contact"] = Relationship(back_populates="establishment")
     tasks: list["Task"] = Relationship(back_populates="establishment")
     opportunities: list["Opportunity"] = Relationship(back_populates="customer_establishment")
+    meets: list["Meet"] = Relationship(back_populates="customer_establishment")
 
 class CustomerEstablishmentResponse(CustomerEstablishmentBase):
     id: int

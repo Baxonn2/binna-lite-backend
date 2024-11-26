@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from src.domains.customer.models.contact import Contact
     from src.domains.customer.models.task import Task
     from src.domains.customer.models.opportunity import Opportunity
+    from src.domains.customer.models.meet import Meet
     from src.domains.auth.models.user_usage import UserUsage
     from src.domains.auth.models.user_usage_limit import UserUsageLimit
 
@@ -39,6 +40,7 @@ class User(UserBase, table = True):
     opportunities: List["Opportunity"] = Relationship(back_populates="user")
     usages: List["UserUsage"] = Relationship(back_populates="user")
     usage_limits: List["UserUsageLimit"] = Relationship(back_populates="user")
+    meets: List["Meet"] = Relationship(back_populates="user")
 
 class UserInDB(UserBase):
     hashed_password: str

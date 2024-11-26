@@ -6,6 +6,7 @@ from src.domains.customer.controllers.establishment_controller import Establishm
 from src.domains.customer.controllers.contact_controller import ContactController
 from src.domains.customer.controllers.task_controller import TaskController
 from src.domains.customer.controllers.opportunity_controller import OpportunityController
+from src.domains.customer.controllers.meet_controller import MeetController
 from src.domains.auth.controllers.user_controller import UserController
 from openai.types.beta.assistant_tool_param import AssistantToolParam
 from openai.types.beta.function_tool_param import FunctionToolParam
@@ -81,6 +82,8 @@ class FunctionParser:
                 param_type = get_args(param_type)[0]
             elif check_is_ignored(param_type):
                 continue
+            elif check_is_datetime_string(param_type):
+                param_type_name = "datetime"
 
             elif not isinstance(param_type, type):
                 raise ValueError(
@@ -201,6 +204,13 @@ function_name_map = {
     "get_opportunity_by_id": OpportunityController.get_opportunity_by_id,
     "update_opportunity": OpportunityController.update_opportunity,
     "delete_opportunity": OpportunityController.delete_opportunity,
+
+    # Meet methods
+    "create_meet": MeetController.create_meet,
+    "get_all_meets": MeetController.get_all_meets,
+    "get_meet": MeetController.get_meet,
+    "update_meet": MeetController.update_meet,
+    "delete_meet": MeetController.delete_meet,
 
     # User methods
     "get_user_profile": UserController.get_user_profile,

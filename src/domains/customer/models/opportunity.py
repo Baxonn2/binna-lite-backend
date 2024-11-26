@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
 
 from sqlmodel import Field, Relationship, SQLModel
@@ -7,6 +7,8 @@ from src.utils.base_models import DeletableModel
 from src.domains.customer.models.establishment import CustomerEstablishment
 from src.domains.auth.models.user import User
 
+if TYPE_CHECKING:
+    from src.domains.customer.models.meet import Meet
 
 class OpportunityBase(SQLModel):
     product: Optional[str] = None
@@ -23,3 +25,5 @@ class Opportunity(OpportunityBase, DeletableModel, table=True):
 
     user_id: int = Field(foreign_key="user.id")
     user: "User" = Relationship(back_populates="opportunities")
+
+    meets: list["Meet"] = Relationship(back_populates="opportunity")

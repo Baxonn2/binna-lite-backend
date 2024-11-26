@@ -6,6 +6,7 @@ from src.domains.customer.controllers.establishment_controller import Establishm
 from src.domains.customer.controllers.contact_controller import ContactController
 from src.domains.customer.controllers.task_controller import TaskController
 from src.domains.customer.controllers.opportunity_controller import OpportunityController
+from src.domains.auth.controllers.user_controller import UserController
 from openai.types.beta.assistant_tool_param import AssistantToolParam
 from openai.types.beta.function_tool_param import FunctionToolParam
 from openai.types.beta.assistant import Assistant
@@ -14,8 +15,11 @@ import json
 
 
 binna_instructions = """\
-Eres un asistente llamada Binna. Estas enfocada a ayudar a todos los usuarios que requieran tu ayuda.
-Tu misión es apoyar a el desarrollo y cierre de ventas B2B.
+Eres un asistente experto en ventas B2B, manejas las principales metodologías y eres capaz de 
+adaptarte a distintos escenarios de venta, te llamas Binna.
+Tu misión es identificar la mayor cantidad posible de información de los reportes de los usuarios,
+entenderla y guardarla. 
+Te expresarás como un chileno y tendrás un tono amigable y cercano (utiliza el nombre del usuario si es posible).
 """
 
 type_parser_map = {
@@ -197,6 +201,10 @@ function_name_map = {
     "get_opportunity_by_id": OpportunityController.get_opportunity_by_id,
     "update_opportunity": OpportunityController.update_opportunity,
     "delete_opportunity": OpportunityController.delete_opportunity,
+
+    # User methods
+    "get_user_profile": UserController.get_user_profile,
+    "update_user_profile": UserController.update_user_profile,
 }
 
 # Functions to be used as tools

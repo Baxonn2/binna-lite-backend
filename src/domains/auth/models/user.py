@@ -18,6 +18,11 @@ class UserBase(SQLModel):
     disabled: Optional[bool] = None
     is_admin: Optional[bool] = None
 
+    my_business_description: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    biography: Optional[str] = None
+
 class UserRegister(UserBase):
     password: str
     password_confirmation: str

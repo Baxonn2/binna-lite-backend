@@ -107,11 +107,16 @@ class ThreadManager:
         #print("Context data", customers_resume)
         
         context = {
-            "username": str(self.user.username),
             "current_datetime": datetime.now().isoformat(),
             "current_day": datetime.now().strftime("%A"),
             #"saved_customers_resume": customers_resume,
         }
+
+        if self.user.first_name:
+            context["user_first_name"] = self.user.first_name
+        
+        if self.user.my_business_description:
+            context["user_business_description"] = self.user.my_business_description
 
         print("Context data", context)
         return context

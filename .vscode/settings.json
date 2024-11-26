@@ -4,6 +4,7 @@
         "Binna",
         "fastapi",
         "ignacio",
+        "mysql",
         "passlib",
         "sqlmodel"
     ],

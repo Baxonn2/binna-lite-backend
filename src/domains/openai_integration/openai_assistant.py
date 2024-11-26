@@ -206,7 +206,7 @@ functions = [ FunctionParser(func).as_tool_param() for func in function_name_map
 
 class BinnaAssistantDescription:
     model: ChatModel = "gpt-4o-mini"
-    name = "Binna Lite V0.0.2"
+    name = "Binna Lite V0.0.2 DEV"
     description = "Una versión más ligera de Binna, con menos parámetros y menos capacidad de respuesta."
     instructions = binna_instructions
     tools: List[AssistantToolParam] = functions

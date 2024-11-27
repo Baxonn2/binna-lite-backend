@@ -224,10 +224,11 @@ functions = [ FunctionParser(func).as_tool_param() for func in function_name_map
 
 class BinnaAssistantDescription:
     model: ChatModel = "gpt-4o-mini"
-    name = "Binna Lite V0.0.2 DEV"
+    name = "Binna Lite V0.0.2 PROD"
     description = "Una versión más ligera de Binna, con menos parámetros y menos capacidad de respuesta."
     instructions = binna_instructions
     tools: List[AssistantToolParam] = functions
+    temperature: 0.3
 
     @classmethod
     def is_equal(cls, assistant: Assistant):

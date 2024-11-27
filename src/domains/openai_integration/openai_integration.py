@@ -24,5 +24,6 @@ else:
             instructions=BinnaAssistantDescription.instructions,
             model=BinnaAssistantDescription.model,
             tools=BinnaAssistantDescription.tools,
+            temperature=BinnaAssistantDescription.temperature
         )
         assistant = my_updated_assistant

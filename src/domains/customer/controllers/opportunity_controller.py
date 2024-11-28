@@ -17,15 +17,16 @@ class OpportunityController:
         product: Optional[str] = None,
     ) -> Opportunity:
         """
-        Registra una nueva oportunidad de negocio en la base de datos del usuario. Para esto 
-        se debe tener en cuenta el ID del cliente al que está relacionada la oportunidad.
+        Registra una nueva oportunidad de negocio en la base de datos del usuario.
+        Toda posible acción comercial entre el usario y un cliente, desde la prospección hasta
+        el cierre del trato se considera oportunidad de negocio.
 
         Args:
          - customer_id: ID del cliente al que está relacionada la oportunidad.
          - close_date: Fecha de cierre de la oportunidad. (Formato ISO 8601)
          - price: Valor monetario que se espera obtener de la oportunidad.
          - notes: Notas adicionales sobre la oportunidad.
-         - product: Producto relacionado con la oportunidad.
+         - product: Producto o servicio relacionado con la oportunidad.
         
         Returns:
          - Opportunity: La nueva oportunidad de negocio registrada.

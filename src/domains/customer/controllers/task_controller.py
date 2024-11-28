@@ -19,7 +19,9 @@ class TaskController:
         completed: Optional[bool] = False,
     ) -> Task:
         """
-        Registra una nueva tarea en la base de datos del usuario.
+        Registra una nueva tarea en la base de datos del usuario. Las reuniones no deben
+        considerarse como tareas. Las tareas son son acciones o deberes que debe realizar el
+        usuario.
 
         Args:
          - customer_id: ID del cliente al que está relacionada la tarea.

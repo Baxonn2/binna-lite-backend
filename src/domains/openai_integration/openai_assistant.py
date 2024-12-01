@@ -16,11 +16,13 @@ import json
 
 
 binna_instructions = """\
-Eres un asistente experto en ventas B2B, manejas las principales metodologías y eres capaz de 
-adaptarte a distintos escenarios de venta, te llamas Binna.
-Tu misión es identificar la mayor cantidad posible de información de los reportes de los usuarios,
-entenderla y guardarla. 
-Te expresarás como un chileno y tendrás un tono amigable y cercano (utiliza el nombre del usuario si es posible).
+Eres Binna, un asistente experto en ventas.
+Tu misión es identificar, entender y guardar la mayor cantidad de información que te diga el usuario.
+Cuando tengas dudas o identifiques que falta información, siempre pregunta al usuario.
+Antes de almacenar un nuevo elemento tipo tarea, reunión, contacto, empresa u oportunidad, 
+revisa en la base de datos si ya está almacenada.
+Considera las acciones proactivas (campo proactive_actions del contexto), como acciones que debes hacer o mensajes que debes enviar cuando sea oportuno. Por ejemplo si te dicen "gracias" o completas un solicitud del usuario, realiza las acciones o envia los mensajes necesarios.
+Te expresarás como un chileno.
 """
 
 type_parser_map = {
@@ -192,6 +194,13 @@ function_name_map = {
     "update_contact": ContactController.update_contact,
     "delete_contact": ContactController.delete_contact,
 
+    # Meet methods
+    "create_meet": MeetController.create_meet,
+    "get_all_meets": MeetController.get_all_meets,
+    "get_meet": MeetController.get_meet,
+    "update_meet": MeetController.update_meet,
+    "delete_meet": MeetController.delete_meet,
+
     # Task methods
     "create_task": TaskController.create_task,
     "get_all_tasks": TaskController.get_all_tasks,
@@ -205,13 +214,6 @@ function_name_map = {
     "update_opportunity": OpportunityController.update_opportunity,
     "delete_opportunity": OpportunityController.delete_opportunity,
 
-    # Meet methods
-    "create_meet": MeetController.create_meet,
-    "get_all_meets": MeetController.get_all_meets,
-    "get_meet": MeetController.get_meet,
-    "update_meet": MeetController.update_meet,
-    "delete_meet": MeetController.delete_meet,
-
     # User methods
     "get_user_profile": UserController.get_user_profile,
     "update_user_profile": UserController.update_user_profile,
@@ -224,10 +226,11 @@ functions = [ FunctionParser(func).as_tool_param() for func in function_name_map
 
 class BinnaAssistantDescription:
     model: ChatModel = "gpt-4o-mini"
-    name = "Binna Lite V0.0.2 DEV"
+    name = "Binna Lite V0.0.2 PROD"
     description = "Una versión más ligera de Binna, con menos parámetros y menos capacidad de respuesta."
     instructions = binna_instructions
     tools: List[AssistantToolParam] = functions
+    temperature = 1
 
     @classmethod
     def is_equal(cls, assistant: Assistant):

@@ -94,9 +94,11 @@ class ThreadManager:
                 event_handler.tool_outputs
             )
         
-        yield "\json" + json.dumps(event_handler.tool_outputs)
+        # yield "Resultado:\n" + json.dumps(event_handler.tool_outputs)
 
     def get_context_data(self):
+        proactive_actions = []
+        
         context = {
             "current_datetime": datetime.now().isoformat(),
             "current_day": datetime.now().strftime("%A"),
@@ -104,10 +106,15 @@ class ThreadManager:
 
         if self.user.first_name:
             context["user_first_name"] = self.user.first_name
+        else:
+            proactive_actions.append('Presentante y pregunta por su nombre')
         
         if self.user.my_business_description:
             context["user_business_description"] = self.user.my_business_description
+        else:
+            proactive_actions.append('Pregunta por la descripción de su negocio o empresa')
 
+        context["proactive_actions"] = proactive_actions
         print("Context data", context)
         return context
 

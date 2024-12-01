@@ -19,6 +19,13 @@ users = [
         "password": "superpass123123",
         "is_admin": True,
         "disabled": False
+    },
+    {
+        "username": "betaUser9612",
+        "email": "sepulvedaignacio2909@gmail.com",
+        "password": "Na12kkBna",
+        "is_admin": False,
+        "disabled": False
     }
 ]
 

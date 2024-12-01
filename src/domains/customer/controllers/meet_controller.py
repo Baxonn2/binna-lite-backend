@@ -24,7 +24,9 @@ class MeetController:
         contact_ids: Optional[str] = None
     ):
         """
-        Registra una nueva reunión en la base de datos del usuario.
+        Registra una nueva reunión en la base de datos del usuario. 
+        Las reuniones, juntas, eventos, encuentros, son todas las tareas que contemplan un lugar
+        y/o un participante adicional al usuario.
 
         Args:
          - customer_id: ID del cliente al que está relacionada la reunión.

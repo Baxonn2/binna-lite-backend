@@ -97,19 +97,9 @@ class ThreadManager:
         yield "\json" + json.dumps(event_handler.tool_outputs)
 
     def get_context_data(self):
-        # from src.domains.customer.controller import customer_controller
-        # customers = customer_controller.get_all(self.db)
-        # customers_resume = [{
-        #     "name": customer.name,
-        #     "id": customer.id
-        # } for customer in customers]
-
-        #print("Context data", customers_resume)
-        
         context = {
             "current_datetime": datetime.now().isoformat(),
             "current_day": datetime.now().strftime("%A"),
-            #"saved_customers_resume": customers_resume,
         }
 
         if self.user.first_name:

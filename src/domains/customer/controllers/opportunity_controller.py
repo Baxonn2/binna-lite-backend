@@ -18,7 +18,7 @@ class OpportunityController:
     ) -> Opportunity:
         """
         Registra una nueva oportunidad de negocio en la base de datos del usuario.
-        Toda posible acción comercial entre el usario y un cliente, desde la prospección hasta
+        Toda posible acción comercial entre el usuario y un cliente, desde la prospección hasta
         el cierre del trato se considera oportunidad de negocio.
 
         Args:
